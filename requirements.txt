@@ -1,0 +1,9 @@
+torch
+transformers>=4.51
+datasets
+peft
+trl
+accelerate
+pytest
+# GPU machine only (Linux + CUDA):
+# vllm
