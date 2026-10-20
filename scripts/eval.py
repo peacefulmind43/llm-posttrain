@@ -20,18 +20,21 @@ from src.gsm8k import STOP, build_prompt, extract_answer, few_shot_prefix, gold_
 from src.stats import wilson
 
 
-def generate_vllm(model, prompts, max_tokens, lora):
+def generate_vllm(model, prompts, max_tokens, lora, gpu_mem):
     from vllm import LLM, SamplingParams
     from vllm.lora.request import LoRARequest
 
-    llm = LLM(model=model, enable_lora=lora is not None, max_lora_rank=64, seed=0)
+    # 8-shot prompts are ~1.5k tokens; 4k leaves room for the answer and keeps
+    # the KV cache small enough for an 8 GB card.
+    llm = LLM(model=model, enable_lora=lora is not None, max_lora_rank=64, seed=0,
+              gpu_memory_utilization=gpu_mem, max_model_len=4096)
     params = SamplingParams(temperature=0.0, max_tokens=max_tokens, stop=STOP)
     req = LoRARequest("adapter", 1, lora) if lora else None
     outs = llm.generate(prompts, params, lora_request=req)
     return [o.outputs[0].text for o in outs]
 
 
-def generate_hf(model, prompts, max_tokens, lora):
+def generate_hf(model, prompts, max_tokens, lora, gpu_mem=None):
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -66,6 +69,7 @@ def main():
     ap.add_argument("--limit", type=int, default=None, help="first N test questions only")
     ap.add_argument("--max-tokens", type=int, default=512)
     ap.add_argument("--backend", choices=["vllm", "hf"], default="vllm")
+    ap.add_argument("--gpu-mem", type=float, default=0.8, help="vLLM gpu_memory_utilization")
     args = ap.parse_args()
 
     ds = load_dataset("openai/gsm8k", "main")
@@ -78,7 +82,7 @@ def main():
     golds = [gold_answer(r["answer"]) for r in test]
 
     gen = generate_vllm if args.backend == "vllm" else generate_hf
-    texts = gen(args.model, prompts, args.max_tokens, args.lora)
+    texts = gen(args.model, prompts, args.max_tokens, args.lora, args.gpu_mem)
 
     out_dir = Path("results") / args.name
     out_dir.mkdir(parents=True, exist_ok=True)

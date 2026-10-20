@@ -6,3 +6,4 @@ checkpoints/
 wandb/
 results/*/generations.jsonl
 results/smoke*/
+.legion.sh
