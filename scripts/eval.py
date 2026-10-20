@@ -21,6 +21,11 @@ from src.stats import wilson
 
 
 def generate_vllm(model, prompts, max_tokens, lora, gpu_mem):
+    import os
+
+    # FlashInfer's sampler JIT-compiles with nvcc, which the WSL box does not
+    # have. Greedy decoding gains nothing from it, so use PyTorch's sampler.
+    os.environ.setdefault("VLLM_USE_FLASHINFER_SAMPLER", "0")
     from vllm import LLM, SamplingParams
     from vllm.lora.request import LoRARequest
 
