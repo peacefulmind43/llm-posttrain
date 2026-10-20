@@ -1,0 +1,19 @@
+{
+  "name": "base-0shot",
+  "model": "Qwen/Qwen3-1.7B-Base",
+  "lora": null,
+  "shots": 0,
+  "n": 1319,
+  "strict_acc": 0.0,
+  "strict_ci95": [
+    0.0,
+    0.002904051399653594
+  ],
+  "lenient_acc": 0.13419257012888552,
+  "lenient_ci95": [
+    0.11685555884799993,
+    0.1536542285672129
+  ],
+  "no_marker_rate": 1.0,
+  "mean_output_chars": 1070.5996967399544
+}
