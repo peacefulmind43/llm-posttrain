@@ -46,6 +46,7 @@ def main():
     ap.add_argument("--max-steps", type=int, default=-1)
     ap.add_argument("--limit", type=int, default=None, help="first N training problems only")
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--resume", action="store_true", help="continue from the latest checkpoint in checkpoints/<name>")
     args = ap.parse_args()
 
     train = load_dataset("openai/gsm8k", "main", split="train")
@@ -103,7 +104,9 @@ def main():
         peft_config=lora,
     )
     trainer.model.print_trainable_parameters()
-    trainer.train()
+    # Resuming restores the optimizer, scheduler, RNG state and data order, so
+    # the run continues as if it had not stopped.
+    trainer.train(resume_from_checkpoint=args.resume or None)
 
     final = out_dir / "final"
     trainer.save_model(str(final))
