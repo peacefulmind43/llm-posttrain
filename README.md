@@ -36,6 +36,7 @@ with Wilson 95% intervals.
 | base, 0-shot | 0.0% | [0.0, 0.3] | 13.4% | 100% |
 | base, 8-shot | 70.3% | [67.8, 72.7] | 70.5% | 1.1% |
 | SFT (LoRA r16, 2 epochs), 0-shot | 65.7% | [63.1, 68.2] | 65.7% | 0.3% |
+| Rejection-sampling SFT (same setup), 0-shot | 72.6% | [70.2, 75.0] | 72.6% | 0.3% |
 
 The base model never writes `####` without examples, and often runs on into
 made-up questions; 0-shot strict accuracy measures format, not maths. The
