@@ -35,10 +35,25 @@ with Wilson 95% intervals.
 |---|---|---|---|---|
 | base, 0-shot | 0.0% | [0.0, 0.3] | 13.4% | 100% |
 | base, 8-shot | 70.3% | [67.8, 72.7] | 70.5% | 1.1% |
+| SFT (LoRA r16, 2 epochs), 0-shot | 65.7% | [63.1, 68.2] | 65.7% | 0.3% |
 
 The base model never writes `####` without examples, and often runs on into
 made-up questions; 0-shot strict accuracy measures format, not maths. The
 8-shot score is the bar.
+
+**SFT fails its bar.** It fixed the format (0.3% without `####`, against 100%
+for the 0-shot base model) but it is 4.6 points *below* the 8-shot base model,
+and the intervals do not overlap. On the same 1,319 problems the two models
+are both right on 740, both wrong on 266; the base model alone is right on
+187, the SFT model alone on 126. Validation loss flattened after about 400
+steps (0.489 at step 100, 0.476 at 400, 0.477 at the end), so more epochs
+would not help.
+
+A likely reason: GSM8K's reference solutions are short and terse, written
+for people, and the base model already reasons better in its own style.
+Training on them by imitation pulls it towards that style and away from
+some of what it could already do. GRPO starts from this SFT model, so it has
+to recover that loss before it can show a gain.
 
 Status: work in progress.
 

@@ -1,0 +1,19 @@
+{
+  "name": "sft-r16-0shot",
+  "model": "Qwen/Qwen3-1.7B-Base",
+  "lora": "checkpoints/sft-r16/final",
+  "shots": 0,
+  "n": 1319,
+  "strict_acc": 0.6565579984836998,
+  "strict_ci95": [
+    0.6305095952610252,
+    0.6816970967571271
+  ],
+  "lenient_acc": 0.6565579984836998,
+  "lenient_ci95": [
+    0.6305095952610252,
+    0.6816970967571271
+  ],
+  "no_marker_rate": 0.003032600454890068,
+  "mean_output_chars": 248.4010614101592
+}
