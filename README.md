@@ -16,6 +16,30 @@ reinforcement learning with GRPO and a reward that only checks the final answer?
   reported with Wilson 95% intervals. Lenient accuracy (last number in the
   output) is also reported, to separate format errors from maths errors.
 
+## Success criteria (written 2026-10-22, before any training)
+
+All numbers are strict accuracy on the full test set, 0-shot unless stated,
+with Wilson 95% intervals.
+
+- **SFT works** if the lower end of its interval is above the upper end of
+  the 8-shot base model's interval (72.7%): with no examples in the prompt,
+  it must beat the base model with eight.
+- **GRPO works** if its interval does not overlap the SFT model's.
+- **Guard rails**, for every model: at most 2% of answers without `####`,
+  and mean output length at most twice the SFT model's (to catch reward
+  hacking by rambling).
+
+## Results
+
+| model | strict | 95% CI | lenient | no `####` |
+|---|---|---|---|---|
+| base, 0-shot | 0.0% | [0.0, 0.3] | 13.4% | 100% |
+| base, 8-shot | 70.3% | [67.8, 72.7] | 70.5% | 1.1% |
+
+The base model never writes `####` without examples, and often runs on into
+made-up questions; 0-shot strict accuracy measures format, not maths. The
+8-shot score is the bar.
+
 Status: work in progress.
 
 ## Run
