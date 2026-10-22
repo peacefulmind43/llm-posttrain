@@ -8,3 +8,4 @@ results/*/generations.jsonl
 results/smoke*/
 .legion.sh
 logs/
+data/*.jsonl

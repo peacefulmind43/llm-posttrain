@@ -47,6 +47,9 @@ def main():
     ap.add_argument("--limit", type=int, default=None, help="first N training problems only")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--resume", action="store_true", help="continue from the latest checkpoint in checkpoints/<name>")
+    ap.add_argument("--data", default=None,
+                    help="JSONL of prompt/completion pairs to train on instead of the reference solutions "
+                         "(e.g. from rft_sample.py); the validation set is unchanged")
     args = ap.parse_args()
 
     train = load_dataset("openai/gsm8k", "main", split="train")
@@ -57,6 +60,10 @@ def main():
         val = val.select(range(min(args.limit, VAL_SIZE)))
     train = train.map(to_example, remove_columns=train.column_names)
     val = val.map(to_example, remove_columns=val.column_names)
+    if args.data:
+        train = load_dataset("json", data_files=args.data, split="train")
+        if args.limit:
+            train = train.select(range(min(args.limit, len(train))))
 
     tok = AutoTokenizer.from_pretrained(args.model)
     model = AutoModelForCausalLM.from_pretrained(args.model, dtype=torch.bfloat16)
