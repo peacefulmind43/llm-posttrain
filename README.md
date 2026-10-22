@@ -52,8 +52,21 @@ would not help.
 A likely reason: GSM8K's reference solutions are short and terse, written
 for people, and the base model already reasons better in its own style.
 Training on them by imitation pulls it towards that style and away from
-some of what it could already do. GRPO starts from this SFT model, so it has
-to recover that loss before it can show a gain.
+some of what it could already do. 
+
+**Rejection-sampling SFT tests that explanation.** The base model, prompted
+8-shot at temperature 0.8, wrote 4 solutions to each training problem; 70.1%
+were correct, and 6,392 of 6,965 problems had at least one. Training on one
+correct solution per problem, in the model's own words, with every other
+setting unchanged, gives 72.6% [70.2, 75.0]: 6.9 points above SFT on the
+reference solutions, with intervals that do not overlap. So the style of the
+training data, not the amount of training, caused most of the drop.
+
+It still does not meet the SFT bar written before training (lower bound above
+72.7%): it is 2.3 points above the 8-shot base model, but the intervals
+overlap. What it does is reach the base model's 8-shot accuracy with no
+examples in the prompt, and in the right format. This model is the starting
+point for GRPO.
 
 Status: work in progress.
 
