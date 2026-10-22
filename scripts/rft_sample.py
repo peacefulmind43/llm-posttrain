@@ -3,7 +3,7 @@
     python scripts/rft_sample.py --k 4 --out data/rft.jsonl
 
 For each training problem (the same split as sft.py: the last 500 are held
-out and never sampled), draw k solutions from the base model with the 8-shot
+out and never sampled, and the few-shot examples are skipped), draw k solutions from the base model with the 8-shot
 prompt, keep one that the strict checker marks correct, and write it as a
 prompt/completion pair in the same format sft.py uses. Problems with no
 correct sample are dropped and counted.
@@ -48,7 +48,8 @@ def main():
     from vllm import LLM, SamplingParams
 
     full = load_dataset("openai/gsm8k", "main", split="train")
-    train = full.select(range(len(full) - VAL_SIZE))
+    # Skip the few-shot examples themselves: the model would just copy them.
+    train = full.select(range(args.shots, len(full) - VAL_SIZE))
     if args.limit:
         train = train.select(range(args.limit))
 
