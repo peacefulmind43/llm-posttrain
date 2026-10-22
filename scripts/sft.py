@@ -76,7 +76,7 @@ def main():
         max_steps=args.max_steps,
         learning_rate=args.lr,
         lr_scheduler_type="cosine",
-        warmup_ratio=0.03,
+        warmup_steps=0.03,  # a float below 1 is a fraction of total steps
         per_device_train_batch_size=args.batch,
         per_device_eval_batch_size=args.batch,
         gradient_accumulation_steps=args.accum,
