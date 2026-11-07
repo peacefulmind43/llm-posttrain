@@ -37,6 +37,7 @@ with Wilson 95% intervals.
 | base, 8-shot | 70.3% | [67.8, 72.7] | 70.5% | 1.1% |
 | SFT (LoRA r16, 2 epochs), 0-shot | 65.7% | [63.1, 68.2] | 65.7% | 0.3% |
 | Rejection-sampling SFT (same setup), 0-shot | 72.6% | [70.2, 75.0] | 72.6% | 0.3% |
+| GRPO on the rejection-sampling SFT model, 0-shot | **77.0%** | [74.6, 79.1] | 77.0% | 0.2% |
 
 The base model never writes `####` without examples, and often runs on into
 made-up questions; 0-shot strict accuracy measures format, not maths. The
@@ -68,6 +69,27 @@ It still does not meet the SFT bar written before training (lower bound above
 overlap. What it does is reach the base model's 8-shot accuracy with no
 examples in the prompt, and in the right format. This model is the starting
 point for GRPO.
+
+**GRPO: 77.0% [74.6, 79.1], +4.4 points over its starting model.** 300 steps,
+4 problems x 8 answers each, reward 1 for a correct `#### n`, KL coefficient
+0.04 against the starting model, a new rank-16 LoRA. Against the bar written
+before training (intervals not overlapping the SFT model's) it falls just
+short: its lower end, 74.6%, is below the SFT model's upper end, 75.0%.
+
+The two Wilson intervals are for independent samples, but both models answered
+the same 1,319 problems, so a paired test is the sharper one. GRPO alone is
+right on 118 problems, the SFT model alone on 61 (both right on 897, both
+wrong on 243); McNemar's test gives chi-squared 17.5, p < 0.0001. So the gain
+is real, even though it misses the bar as written.
+
+Guard rails: 0.2% of answers lack `####`, and mean output length rose from 247
+to 276 characters (+12%), well under the 2x limit. During training the mean
+reward over 25-step windows went from about 0.77 to 0.83, and in about half
+of all groups the 8 answers were all right or all wrong, so gave no gradient.
+
+Training ran with interruptions (the laptop dropped off the network several
+times) and was resumed from checkpoints 250 and 275, which restore the
+optimizer, scheduler and RNG state.
 
 Status: work in progress.
 
