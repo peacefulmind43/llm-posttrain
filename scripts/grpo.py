@@ -49,13 +49,19 @@ def main():
     ap.add_argument("--temperature", type=float, default=1.0)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--resume", action="store_true")
+    ap.add_argument("--data", default=None,
+                    help="JSONL of prompt/answer pairs to train on (e.g. from difficulty_filter.py) "
+                         "instead of all training problems")
     args = ap.parse_args()
 
-    full = load_dataset("openai/gsm8k", "main", split="train")
-    train = full.select(range(len(full) - VAL_SIZE)).map(
-        lambda r: {"prompt": PROMPT.format(question=r["question"]), "answer": gold_answer(r["answer"])},
-        remove_columns=full.column_names,
-    )
+    if args.data:
+        train = load_dataset("json", data_files=args.data, split="train").select_columns(["prompt", "answer"])
+    else:
+        full = load_dataset("openai/gsm8k", "main", split="train")
+        train = full.select(range(len(full) - VAL_SIZE)).map(
+            lambda r: {"prompt": PROMPT.format(question=r["question"]), "answer": gold_answer(r["answer"])},
+            remove_columns=full.column_names,
+        )
 
     tok = AutoTokenizer.from_pretrained(args.model)
     model = AutoModelForCausalLM.from_pretrained(args.model, dtype=torch.bfloat16)

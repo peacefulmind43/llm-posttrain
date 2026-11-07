@@ -1,0 +1,19 @@
+{
+  "name": "grpo-g8-0shot",
+  "model": "checkpoints/rft-r16/merged",
+  "lora": "checkpoints/grpo-g8/final",
+  "shots": 0,
+  "n": 1319,
+  "strict_acc": 0.7695223654283548,
+  "strict_ci95": [
+    0.7460313233501895,
+    0.7914479939013997
+  ],
+  "lenient_acc": 0.7695223654283548,
+  "lenient_ci95": [
+    0.7460313233501895,
+    0.7914479939013997
+  ],
+  "no_marker_rate": 0.001516300227445034,
+  "mean_output_chars": 276.05155420773315
+}
